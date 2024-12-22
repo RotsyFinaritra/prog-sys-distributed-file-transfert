@@ -126,10 +126,6 @@ public class MasterServer {
             while ((command = in.readUTF()) != null && !socketClient.isClosed()) {
                 System.out.println("Commande choisi: " + command);
                 switch (command) {
-                    case "SIMPLE_MESSAGE":
-                        handleSimpleMessage(in, out);
-                        break;
-
                     case "LISTING":
                         handleListing(out);
                         break;

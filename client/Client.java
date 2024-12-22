@@ -44,18 +44,11 @@ public class Client {
 
                 switch (command) {
                     case "1":
-                        output.writeUTF("SIMPLE_MESSAGE");
-                        System.out.println("Sorato ary ny message: ");
-                        String message = scanner.nextLine();
-                        output.writeUTF(message);
-                        System.out.println("Server: " + input.readUTF());
-                        break;
-                    case "2":
                         output.writeUTF("LISTING");
                         String listing = input.readUTF();
                         System.out.println("Liste an'ireo fichiers ao amin'ny serveur: " + listing);
                         break;
-                    case "3":
+                    case "2":
                         System.out.println("Sorato ny lalana feno makany amin'ny fichier ho alefa: ");
                         String filePath = scanner.nextLine();
                         File file = new File(filePath);
@@ -68,7 +61,7 @@ public class Client {
                             System.out.println("Hamarino tsara ny path nosoratanao. Avereno indray.");
                         }
                         break;
-                    case "4":
+                    case "3":
                         System.out.println("Sorato ny anaran'ny fichier tianao ho alaina: ");
                         String fileName = scanner.nextLine();
                         System.out.println("Ampidiro ny lalana feno tianao ametrahana ny fichier: ");
@@ -77,13 +70,13 @@ public class Client {
                         output.writeUTF(fileName);
                         receiveFile(fileName, savePath, input, output);
                         break;
-                    case "5":
+                    case "4":
                         System.out.println("Sorato eto ny anaran'ny fichier tianao hofafaina: ");
                         String fileNameRm = scanner.nextLine();
                         output.writeUTF("REMOVE");
                         output.writeUTF(fileNameRm);
                         break;
-                    case "6":
+                    case "5":
                         output.writeUTF("EXIT");
                         System.out.println("Miala amin'ny fifandraisana...");
                         scanner.close();
