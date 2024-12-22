@@ -88,8 +88,8 @@ public class SlaveServer {
                             .println("Commande UPLOAD reçue. Nom du fichier : " + fileName + ", Taille : " + fileSize);
 
                     // Stocker le fichier dans le répertoire local
-                    String saveDir = configLoader.getSlaveDirPath(this.getSlaveId()); // Assurez-vous que cette méthode
-                                                                                      // est définie
+                    String saveDir = configLoader.getSlaveDirPath(this.getSlaveId()); 
+                                                                                      
                     File file = new File(saveDir, fileName);
 
                     try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
@@ -147,6 +147,32 @@ public class SlaveServer {
                     } catch (IOException e) {
                         System.err.println("Error sending file: " + e.getMessage());
                     }
+
+                } else if ("REMOVE_PART".equalsIgnoreCase(message)) {
+                    String fileName = inputStream.readUTF();
+                    System.out.println("Deleting part of the file:" + fileName);
+
+                    // Définir l'emplacement du fichier sur le slave
+                    File fileToRemove = new File(this.getDirPath(), fileName);
+
+                    // Vérifier si le fichier existe
+                    if (fileToRemove.exists()) {
+                        // Supprimer le fichier
+                        boolean deleted = fileToRemove.delete();
+
+                        // Envoyer une confirmation de la suppression au master
+                        if (deleted) {
+                            System.out.println("File part successfully deleted: " + fileName);
+                            outputStream.writeBoolean(true); 
+                        } else {
+                            System.out.println("Failed to delete file part: " + fileName);
+                            outputStream.writeBoolean(false);
+                        }
+                    } else {
+                        System.out.println("File part not found: " + fileName);
+                        outputStream.writeBoolean(false); 
+                    }
+                    outputStream.flush();
 
                 }
             }

@@ -313,44 +313,50 @@ public class MasterServer {
         System.out.println("File " + fileName + " sent to client.");
     }
 
-    // private void handleFileDownload(DataInputStream in, DataOutputStream out)
-    // throws IOException {
-    // String fileName = in.readUTF();
-    // File file = new File(configLoader.getSavePath() + fileName);
-
-    // if (!file.exists()) {
-    // out.writeUTF("Fichier introuvable.");
-    // return;
-    // }
-
-    // out.writeUTF("Fichier trouvé.");
-    // out.writeLong(file.length());
-
-    // try (FileInputStream fileInputStream = new FileInputStream(file)) {
-    // byte[] buffer = new byte[4096];
-    // int bytesRead;
-
-    // while ((bytesRead = fileInputStream.read(buffer)) > 0) {
-    // out.write(buffer, 0, bytesRead);
-    // }
-    // }
-
-    // System.out.println("Fichier " + fileName + " envoyé avec succès.");
-    // }
-
     private void handleFileRemove(DataInputStream in, DataOutputStream out) throws IOException {
+        // Recevoir le nom du fichier à supprimer
         String fileName = in.readUTF();
-        File file = new File(this.getConfigLoader().getSavePath() + fileName);
 
-        if (file.exists() && file.isFile()) {
-            if (file.delete()) {
-                out.writeUTF("Fichier supprimé avec succès.");
-            } else {
-                out.writeUTF("Échec de la suppression du fichier.");
-            }
-        } else {
-            out.writeUTF("Fichier introuvable.");
+        // Mettre à jour la liste des slaves actifs
+        updateActiveSlaves();
+
+        // Vérifier si des slaves sont disponibles
+        if (activeSubs.isEmpty()) {
+            out.writeUTF("ERROR: No active slaves available to retrieve the file.");
+            return;
         }
+
+        for (SlaveServer slave : this.getActiveSubs()) {
+            try {
+                Socket slaveSocket = new Socket(slave.getHost(), slave.getPort());
+                DataOutputStream slaveOut = new DataOutputStream(slaveSocket.getOutputStream());
+                DataInputStream slaveIn = new DataInputStream(slaveSocket.getInputStream());
+
+                // Envoyer le nom de la commande et le fichier à supprimer
+                slaveOut.writeUTF("REMOVE_PART");
+                slaveOut.writeUTF(fileName);
+                slaveOut.flush();
+
+                // Lire la réponse du slave
+                boolean success = slaveIn.readBoolean();
+                if (!success) {
+                    System.out.println("Erreur pendant la suppression d'une partie dans slave:" + slave.getSlaveId());
+                    out.writeUTF("Erreur pendant la suppression d'une partie dans slave:" + slave.getSlaveId());
+                } else {
+                    out.writeUTF("Partie supprimée dans slave: "+slave.getSlaveId());
+                }
+
+                // Fermer la connexion avec le slave
+                slaveOut.close();
+                slaveIn.close();
+                slaveSocket.close();
+            } catch (IOException e) {
+                System.err.println("Erreur lors de la communication avec le slave " + slave + ": " + e.getMessage());
+            }
+        }
+
+        out.writeUTF("Fichier supprimé avec succès.");
+        out.flush();
     }
 
     public String getHost() {
