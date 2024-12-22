@@ -75,9 +75,6 @@ public class SlaveServer {
                 DataOutputStream outputStream = new DataOutputStream(masterSocket.getOutputStream())) {
             System.out.println("Handling communication with MasterServer...");
 
-            // Envoyer un message de bienvenue
-            outputStream.writeUTF("HELLO_MASTER " + slaveId);
-
             // Lire et traiter les messages du MasterServer
             String message;
             while ((message = inputStream.readUTF()) != null) {
