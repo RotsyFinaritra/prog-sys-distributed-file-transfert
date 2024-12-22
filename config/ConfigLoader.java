@@ -6,8 +6,10 @@ import java.util.Properties;
 
 public class ConfigLoader {
     private Properties properties;
+    private String configPath;
 
     public ConfigLoader(String configFilePath) {
+        setConfigPath(configFilePath);
         properties = new Properties();
         try (FileInputStream input = new FileInputStream(configFilePath)) {
             properties.load(input);
@@ -57,5 +59,13 @@ public class ConfigLoader {
 
     public void setProperties(Properties properties) {
         this.properties = properties;
+    }
+
+    public String getConfigPath() {
+        return configPath;
+    }
+
+    public void setConfigPath(String configPath) {
+        this.configPath = configPath;
     }
 }
