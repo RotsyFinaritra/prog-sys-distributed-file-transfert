@@ -156,12 +156,6 @@ public class MasterServer {
         }
     }
 
-    private void handleSimpleMessage(DataInputStream in, DataOutputStream out) throws IOException {
-        String message = in.readUTF();
-        System.out.println("Message reçu du client : " + message);
-        out.writeUTF("Message reçu : " + message);
-    }
-
     private void handleListing(DataOutputStream out) throws IOException {
         File dir = new File(this.getConfigLoader().getSavePath()); // Répertoire où les fichiers sont stockés
         if (!dir.exists() || !dir.isDirectory()) {
