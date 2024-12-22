@@ -116,6 +116,41 @@ public class SlaveServer {
                         System.err.println("Erreur lors de la réception du fichier : " + e.getMessage());
                         outputStream.writeUTF("UPLOAD_FAILED " + fileName);
                     }
+                } else if (message.startsWith("DOWNLOAD_PART")) {
+                    // Extraire le nom du fichier demandé
+                    String fileName = inputStream.readUTF();
+                    System.out.println("Master requested file: " + fileName);
+
+                    // Vérifier si le fichier existe localement
+                    File file = new File(configLoader.getSlaveDirPath(this.getSlaveId()), fileName);
+                    if (!file.exists()) {
+                        System.err.println("File " + fileName + " not found.");
+                        outputStream.writeUTF("ERROR: File not found.");
+                        outputStream.flush();
+                        continue;
+                    }
+
+                    // Lire le contenu du fichier
+                    try (FileInputStream fileInputStream = new FileInputStream(file)) {
+                        byte[] fileData = fileInputStream.readAllBytes();
+
+                        System.out.println("File name: " + fileName);
+                        System.out.println("Actual file size: " + file.length());
+                        System.out.println("Sending file size: " + fileData.length);
+
+                        // Envoyer la taille et les données
+                        outputStream.writeInt(fileData.length);
+                        outputStream.flush();
+
+                        System.out.println("Sending file data...");
+                        outputStream.write(fileData);
+                        outputStream.flush();
+
+                        System.out.println("File data sent successfully.");
+                    } catch (IOException e) {
+                        System.err.println("Error sending file: " + e.getMessage());
+                    }
+
                 }
             }
 
@@ -130,7 +165,7 @@ public class SlaveServer {
             if (!dirCheck.exists()) {
                 dirCheck.mkdir();
             }
-            
+
         } catch (Exception e) {
             e.printStackTrace();
         }

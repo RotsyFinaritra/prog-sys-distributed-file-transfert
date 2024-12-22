@@ -94,12 +94,11 @@ public class Client {
 
     private String displayMenuAndGetChoice(Scanner scanner) {
         System.out.println("\nSafidio izay tianao (ex : 1): ");
-        System.out.println("1. (simple message) Mandefa message tsotra");
-        System.out.println("2. (list) Mijery ny liste an'ireo fichiers ao amin'ny serveur");
-        System.out.println("3. (upload) Mandefa fichier makany amin'ny serveur");
-        System.out.println("4. (download) Maka fichier ao amin'ny serveur");
-        System.out.println("5. (remove) Mamafa fichier ao amin'ny serveur");
-        System.out.println("6. (exit) Hiala");
+        System.out.println("1. (list) Mijery ny liste an'ireo fichiers ao amin'ny serveur");
+        System.out.println("2. (upload) Mandefa fichier makany amin'ny serveur");
+        System.out.println("3. (download) Maka fichier ao amin'ny serveur");
+        System.out.println("4. (remove) Mamafa fichier ao amin'ny serveur");
+        System.out.println("5. (exit) Hiala");
         System.out.print("Sorato eto ny chiffre mifandray amin'izay tianao atao: ");
         return scanner.nextLine();
     }
@@ -108,7 +107,7 @@ public class Client {
     public void receiveFile(String fileName, String savePath, DataInputStream inputStream, DataOutputStream output)
             throws IOException {
         String serverResponse = inputStream.readUTF();
-        if (!serverResponse.equalsIgnoreCase("Fichier trouvé.")) {
+        if (!serverResponse.equalsIgnoreCase("DOWNLOAD_READY")) {
             System.out.println(serverResponse);
             return;
         }

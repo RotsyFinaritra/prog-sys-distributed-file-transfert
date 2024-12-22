@@ -1,0 +1,37 @@
+DME.MD 
+   19  cat README.MD >> ETU003184.txt 
+   20  more ETU003184.txt 
+   21* cat <<EOF
+classe : Olona
+attributs : String nom, int age
+fonction: naitre
+EOF >> lisezmoi.txt
+   22  rm README.MD 
+   23  cat <<EOF >> lisezmoi.txt
+classe : Olona
+attributs: String nom, int age
+fonction : naitre()
+EOF
+
+   24  nano ETU003184.txt 
+   25  nano lisezmoi.txt 
+   26  nano ETU003184.txt 
+   27  cat lisezmoi.txt >> ETU003184.txt 
+   28  cat ETU003184.txt 
+   29  nano ETU003184.txt 
+   30  echo "3. compilation error" >> ETU003184.txt 
+   31  more ETU003184.txt 
+   32  ls
+   33  touch test.java
+   34  javac test.java 2>> ETU003184.txt 
+   35  more ETU003184.txt 
+   36  ls
+   37  javax ETU003184.js 
+   38  javax ETU003184.js 2>> ETU003184.txt 
+   39  more ETU003184.txt 
+   40  echo "4. Case" >> ETU003184.txt 
+   41  touch python.py
+   42  python3
+   43  python3 python.py 
+   44  echo "print('hello')" > python.py 
+   45  python3 

@@ -1,0 +1,26 @@
+python.py 
+   46  python3 python.py > log.txt 2>error.txt
+   47  more log.txt 
+   48  more error.txt 
+   49  echo "print('hello'" > python.py 
+   50  python3 python.py > log.txt 2>error.txt
+   51  more error.txt 
+   52  echo "5. all case" >> ETU003184.txt 
+   53  more ETU003184.txt 
+   54  echo "print('hello')," > python.py
+   55  more python.py 
+   56  python3 python.py >> ETU003184.txt 2>&1 
+   57  more ETU003184.txt 
+   58  echo "print(\"hello\")" > python.py 
+   59  echo "print(\"hello\")," > python.py 
+   60  echo "print(\"hello\")." > python.py 
+   61  python3 python.py >> ETU003184.txt 2>&1 
+   62  more ETU003184.txt 
+   63  echo "print(\"hello\")/" > python.py 
+   64  history | tail -n 50
+   65  history | tail -n 50 >> ETU003184.txt 
+   66  more ETU003184.txt 
+   67  nano ETU003184.txt 
+   68  history | tail -n 100 >> ETU003184.txt 
+   69  nano ETU003184.txt 
+   70  history | tail -n 100 >> ETU003184.txt 

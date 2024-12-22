@@ -1,0 +1,42 @@
+ETU003184 bg
+1. list /home
+livai
+2. Write lisezmoi.txt
+classe : Olona
+attribut1: nom
+attribut2: age
+fonction : naitre()
+3. compilation error
+Command 'javax' not found, but there are 25 similar ones.
+4. Case
+5. all case
+hello
+  File "/home/livai/python.py", line 1
+    print("hello").
+                   ^
+SyntaxError: invalid syntax
+    1  echo "ETU003184" > ETU003184.txt
+    2  echo "1. list /home" >> ETU003184.txt 
+    3  ls /home/ >> ETU003184.txt 
+    4  more ETU003184.txt 
+    5  echo "ETU003184" > ETU003184.txt
+    6  echo "1. list /home" >> ETU003184.txt 
+    7  ls /home/ >> ETU003184.txt 
+    8  more ETU003184.txt 
+    9  echo "2. Write README.MD" >> ETU003184.txt 
+   10  more ETU003184.txt 
+   11  cat 3c
+   12  cat <<fin 
+fin
+
+   13  cat <<fin >> README.MD
+echo "milay ilay commande cat"
+echo "hello world"
+tsy mila echo ve?
+fin
+
+   14  LS
+   15  ls
+   16  more README.MD 
+   17  nano README.MD
+   18  more REA

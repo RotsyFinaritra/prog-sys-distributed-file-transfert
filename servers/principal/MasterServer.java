@@ -1,14 +1,16 @@
 package servers.principal;
 
+import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import config.ConfigLoader;
 import servers.subservers.SlaveServer;
@@ -243,28 +245,98 @@ public class MasterServer {
     }
 
     private void handleFileDownload(DataInputStream in, DataOutputStream out) throws IOException {
+        // 1. Recevoir la demande du client
         String fileName = in.readUTF();
-        File file = new File(configLoader.getSavePath() + fileName);
+        System.out.println("Download request received for file: " + fileName);
 
-        if (!file.exists()) {
-            out.writeUTF("Fichier introuvable.");
+        updateActiveSlaves();
+
+        if (activeSubs.isEmpty()) {
+            out.writeUTF("ERROR: No active slaves available to retrieve the file.");
             return;
         }
 
-        out.writeUTF("Fichier trouvé.");
-        out.writeLong(file.length());
+        // 2. Collecter les parties du fichier depuis les slaves actifs
+        Map<Integer, byte[]> fileParts = new TreeMap<>();
+        int totalParts = activeSubs.size();
 
-        try (FileInputStream fileInputStream = new FileInputStream(file)) {
-            byte[] buffer = new byte[4096];
-            int bytesRead;
+        for (int i = 0; i < activeSubs.size(); i++) {
+            SlaveServer slave = activeSubs.get(i);
+            try (Socket slaveSocket = new Socket(slave.getHost(), slave.getPort());
+                    DataOutputStream slaveOut = new DataOutputStream(slaveSocket.getOutputStream());
+                    DataInputStream slaveIn = new DataInputStream(slaveSocket.getInputStream())) {
 
-            while ((bytesRead = fileInputStream.read(buffer)) > 0) {
-                out.write(buffer, 0, bytesRead);
+                System.out.println("Maka ny partie any amin'ny slave: " + slave.getSlaveId());
+
+                // Envoyer la demande de fichier au slave
+                slaveOut.writeUTF("DOWNLOAD_PART");
+                slaveOut.writeUTF(fileName);
+
+                // Recevoir la partie du fichier
+                System.out.println("Waiting to receive file size from slave...");
+                int partSize = slaveIn.readInt();
+                System.out.println("Received file size: " + partSize);
+
+                byte[] partData = new byte[partSize];
+                System.out.println("Waiting to receive file data...");
+                slaveIn.readFully(partData);
+
+                // Stocker la partie dans une collection triée
+                System.out.println("Received part from slave: " + slave.getSlaveId());
+                fileParts.put(i, partData);
+            } catch (IOException e) {
+                System.err.println("Failed to retrieve part from slave: " + slave.getSlaveId() + ": " + e.getMessage());
+                out.writeUTF("ERROR: Failed to retrieve all parts of the file.");
+                return;
             }
         }
 
-        System.out.println("Fichier " + fileName + " envoyé avec succès.");
+        // 3. Rassembler les parties du fichier
+        ByteArrayOutputStream assembledFile = new ByteArrayOutputStream();
+        for (int i = 0; i < totalParts; i++) {
+            if (!fileParts.containsKey(i)) {
+                System.err.println("Missing part " + i + " of the file.");
+                out.writeUTF("ERROR: Missing parts of the file.");
+                return;
+            }
+            assembledFile.write(fileParts.get(i));
+        }
+
+        byte[] completeFile = assembledFile.toByteArray();
+        System.out.println("File " + fileName + " assembled successfully.");
+
+        // 4. Envoyer le fichier complet au client
+        out.writeUTF("DOWNLOAD_READY");
+        out.writeLong(completeFile.length);
+        out.write(completeFile);
+
+        System.out.println("File " + fileName + " sent to client.");
     }
+
+    // private void handleFileDownload(DataInputStream in, DataOutputStream out)
+    // throws IOException {
+    // String fileName = in.readUTF();
+    // File file = new File(configLoader.getSavePath() + fileName);
+
+    // if (!file.exists()) {
+    // out.writeUTF("Fichier introuvable.");
+    // return;
+    // }
+
+    // out.writeUTF("Fichier trouvé.");
+    // out.writeLong(file.length());
+
+    // try (FileInputStream fileInputStream = new FileInputStream(file)) {
+    // byte[] buffer = new byte[4096];
+    // int bytesRead;
+
+    // while ((bytesRead = fileInputStream.read(buffer)) > 0) {
+    // out.write(buffer, 0, bytesRead);
+    // }
+    // }
+
+    // System.out.println("Fichier " + fileName + " envoyé avec succès.");
+    // }
 
     private void handleFileRemove(DataInputStream in, DataOutputStream out) throws IOException {
         String fileName = in.readUTF();
